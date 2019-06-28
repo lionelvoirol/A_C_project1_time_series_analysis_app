@@ -1,17 +1,23 @@
-#Define working directorysetwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
+setwd("~/R tests")
 
 #Load libraries
 library(shiny)
 library(quantmod)
 library(ggplot2)
 library(shinyTime)
-library('tseries')
+library(tseries)
 library(dsa)
 library(quantmod)
 library(forecast)
 
+library(smooth)
+library(Mcomp)
+
+source("ma_function.R")
+
+
 #load symbols, hashed as comment
-#my_symbols = stockSymbols()
+# my_symbols = stockSymbols()
 
 # Define UI
 ui = shinyUI(fluidPage(
@@ -30,7 +36,7 @@ ui = shinyUI(fluidPage(
     dateInput('end_time', 'End Date'),
     selectizeInput('forecasting_method', 'Method', c('Select method', 'MA', 'ETS'))
     #method to include  c('Select method', 'MA', 'ARIMA', 'ETS', 'GARCH', 'LSTM')
-
+    
   ),
   #Parameters for MA method
   
@@ -39,10 +45,11 @@ ui = shinyUI(fluidPage(
     absolutePanel(
       width = 250,
       top = 510, left = 50, 
-      sliderInput('ma_order', "Number of days", min = 0, max =  365, 20, value = 10)
+      sliderInput('ma_order', "Number of days", min = 5, max =  365, 5, value = 10),
+      selectizeInput('ma_type', 'Type', c('simple', 'exponential'))
     )
   ),
-
+  
   #Parameters for ARIMA method
   conditionalPanel(
     condition = "input.forecasting_method == 'ARIMA'",
@@ -89,7 +96,7 @@ server = shinyServer(function(input, output){
       myts2 = xts2ts(my_ts, freq = 364.25)
       plot(myts2, ylab = 'Value')
     }
-    #MA
+    # MA # Moving Average function from "ma_function.R"
     if(input$forecasting_method == 'MA'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
@@ -97,9 +104,13 @@ server = shinyServer(function(input, output){
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
       plot(myts2)
-      lines(ma(myts2, order=input$ma_order), col = 'blue')
+      # arguments: (series, type, period)
+      m_a <- moving_average(series = myts2, type = input$ma_type, period = input$ma_order)
+      m_a <- ts(m_a,  
+                start = start(myts2), end = end(myts2), frequency = 364.25)
+      lines(m_a, col = "purple")
     }
-
+    
     #ETS
     if(input$forecasting_method == 'ETS'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
@@ -132,6 +143,3 @@ server = shinyServer(function(input, output){
 
 #Run app
 shiny::shinyApp(ui,server)
-
-
-
