@@ -56,10 +56,11 @@ ui = shinyUI(fluidPage(
     absolutePanel(
       width = 250,
       top = 510, left = 50, 
-      selectizeInput('ets_e', 'Error', c('A', 'M', 'N', 'Z')),
-      selectizeInput('ets_t', 'Trend', c('A', 'M', 'N','Z')),
-      selectizeInput('ets_s', 'Seasonality', c('A', 'M', 'N','Z')),
-      checkboxInput('ets_damped', 'Damped')
+      selectizeInput('ets_e', 'Error', c('A', 'M', 'N', 'Z'), selected = 'Z'),
+      selectizeInput('ets_t', 'Trend', c('A', 'M', 'N','Z'), selected = 'Z'),
+      selectizeInput('ets_s', 'Seasonality', c('A', 'M', 'N','Z'), selected = 'Z'),
+      checkboxInput('ets_damped', 'Damped'),
+      textOutput('selected_ets_model')
     )
   ),
   #Parameters for GARCH method
@@ -80,8 +81,12 @@ ui = shinyUI(fluidPage(
 server = shinyServer(function(input, output){
   output$my_plot = renderPlot({
     
+    #No selected stock
+    if(input$stock_name == 'Select stock'){
+    }
+
     #No method selected
-    if(input$forecasting_method == 'Select method'){
+    if(input$forecasting_method == 'Select method' && input$stock_name != 'Select stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
       )
@@ -89,8 +94,9 @@ server = shinyServer(function(input, output){
       myts2 = xts2ts(my_ts, freq = 364.25)
       plot(myts2, ylab = 'Value')
     }
+    
     #MA
-    if(input$forecasting_method == 'MA'){
+    if(input$forecasting_method == 'MA' && input$stock_name != 'Select stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
       )
@@ -101,14 +107,14 @@ server = shinyServer(function(input, output){
     }
 
     #ETS
-    if(input$forecasting_method == 'ETS'){
+    if(input$forecasting_method == 'ETS' && input$stock_name != 'Select stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
-      ets_model = as.character(c(input$ets_e, input$ets_t, input$ets_s))
-      fit = ets(myts2, model = 'AAN', damped = input$ets_damped)
+      ets_model = as.character(paste(input$ets_e, input$ets_t, input$ets_s, sep =''))
+      fit = ets(myts2, model = ets_model, damped = input$ets_damped)
       plot(forecast(fit))
       #autoplot(my_ts, geom = 'line')  
       #autoplot(my_ts)
@@ -128,10 +134,12 @@ server = shinyServer(function(input, output){
   output$initial_date = renderText({
     index(getSymbols(input$stock_name, auto.assign = F))[1]
   })
+  output$selected_ets_model = renderText({
+    as.character(paste(input$ets_e, input$ets_t, input$ets_s, sep =''))
+  })
 })
 
 #Run app
 shiny::shinyApp(ui,server)
-
 
 
