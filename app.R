@@ -31,17 +31,27 @@ ui = shinyUI(fluidPage(
     dateInput('start_time', 'Start Date', value = Sys.Date()- 365 *5),
     dateInput('end_time', 'End Date'),
     selectizeInput('forecasting_method', 'Method', c('Select method','Naive', 'Mean', 'Seasonal Naive', 'MA', 'ETS'))
-    
     #method to include  c('Select method', 'MA', 'ARIMA', 'ETS', 'GARCH', 'LSTM')
 
   ),
+  
+  #Parameters for forecasting
+  conditionalPanel(
+    condition = "input.forecasting_method != 'Select method'",
+    absolutePanel(
+      width = 250,
+      top = 550, left = 50, 
+      sliderInput('days_forecast', 'Days to forecast', min = 0, max =  365, value = 15)
+    )
+  ),
+  
   #Parameters for MA method
   
   conditionalPanel(
     condition = "input.forecasting_method == 'MA'",
     absolutePanel(
       width = 250,
-      top = 510, left = 50, 
+      top = 600, left = 50, 
       sliderInput('ma_order', "Number of days", min = 0, max =  365, 20, value = 10)
     )
   ),
@@ -58,7 +68,7 @@ ui = shinyUI(fluidPage(
     condition = "input.forecasting_method == 'ETS'",
     absolutePanel(
       width = 250,
-      top = 510, left = 50, 
+      top = 600, left = 50, 
       selectizeInput('ets_e', 'Error', c('A', 'M', 'N', 'Z'), selected = 'Z'),
       selectizeInput('ets_t', 'Trend', c('A', 'M', 'N','Z'), selected = 'Z'),
       selectizeInput('ets_s', 'Seasonality', c('A', 'M', 'N','Z'), selected = 'Z'),
@@ -104,9 +114,8 @@ server = shinyServer(function(input, output){
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
-      my_h =69
       print(autoplot(myts2) +
-              autolayer(meanf(myts2, h=my_h),
+              autolayer(meanf(myts2, h=input$days_forecast),
                         series="Mean", PI=FALSE) +
               xlab("Year") + ylab("Price") +
               guides(colour=guide_legend(title="Forecast")))
@@ -118,10 +127,9 @@ server = shinyServer(function(input, output){
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
-      my_h =69
       print(autoplot(myts2) +
-              autolayer(naive(myts2, h=my_h),
-                        series="Naïve", PI=FALSE)+
+              autolayer(naive(myts2, h=input$days_forecast),
+                        series = "Naive", PI=FALSE)+
               xlab("Year") + ylab("Price") +
               guides(colour=guide_legend(title="Forecast")))
     }
@@ -132,10 +140,9 @@ server = shinyServer(function(input, output){
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
-      my_h =69
       print(autoplot(myts2) +
-              autolayer(snaive(myts2, h=my_h),
-                        series="Seasonal naïve", PI=FALSE) +
+              autolayer(snaive(myts2, h=input$days_forecast),
+                        series="Seasonal Naive", PI=FALSE) +
               xlab("Year") + ylab("Price") +
               guides(colour=guide_legend(title="Forecast")))
     }
@@ -159,10 +166,9 @@ server = shinyServer(function(input, output){
       myts2 = xts2ts(my_ts, freq = 364.25)
       ets_model = as.character(paste(input$ets_e, input$ets_t, input$ets_s, sep =''))
       fit = ets(myts2, model = ets_model, damped = input$ets_damped)
-      plot(forecast(fit))
+      print(autoplot(forecast(fit)))
       #autoplot(my_ts, geom = 'line')  
       #autoplot(my_ts)
-      
     }
     
   })
