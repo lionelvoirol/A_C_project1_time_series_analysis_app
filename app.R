@@ -9,6 +9,8 @@ library('tseries')
 library(dsa)
 library(quantmod)
 library(forecast)
+library(ggfortify)
+
 
 #load symbols, hashed as comment
 #my_symbols = stockSymbols()
@@ -19,7 +21,7 @@ ui = shinyUI(fluidPage(
   
   helpText("Display selected stocks and enable comparing different forecasting methods"),
   
-  #Stock, domain, method and confidence interval selection
+  #Stock, domain, method, forecast and confidence interval selection
   sidebarPanel(
     width = 3,
     selectizeInput('stock_name', 'Stock', c('Select stock', my_symbols[,1]), selected = 'Select stock'),
@@ -28,7 +30,8 @@ ui = shinyUI(fluidPage(
     textOutput('industry'),
     dateInput('start_time', 'Start Date', value = Sys.Date()- 365 *5),
     dateInput('end_time', 'End Date'),
-    selectizeInput('forecasting_method', 'Method', c('Select method', 'MA', 'ETS'))
+    selectizeInput('forecasting_method', 'Method', c('Select method','Naive', 'Mean', 'Seasonal Naive', 'MA', 'ETS'))
+    
     #method to include  c('Select method', 'MA', 'ARIMA', 'ETS', 'GARCH', 'LSTM')
 
   ),
@@ -92,9 +95,50 @@ server = shinyServer(function(input, output){
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
-      plot(myts2, ylab = 'Value')
+      print(autoplot(myts2))
     }
-    
+    #Mean
+    if(input$forecasting_method == 'Mean' && input$stock_name != 'Selected stock'){
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
+      )
+      my_ts = my_ts[,4]
+      myts2 = xts2ts(my_ts, freq = 364.25)
+      my_h =69
+      print(autoplot(myts2) +
+              autolayer(meanf(myts2, h=my_h),
+                        series="Mean", PI=FALSE) +
+              xlab("Year") + ylab("Price") +
+              guides(colour=guide_legend(title="Forecast")))
+    }
+    #Naive
+    if(input$forecasting_method == 'Naive' && input$stock_name != 'Selected stock'){
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
+      )
+      my_ts = my_ts[,4]
+      myts2 = xts2ts(my_ts, freq = 364.25)
+      my_h =69
+      print(autoplot(myts2) +
+              autolayer(naive(myts2, h=my_h),
+                        series="Naïve", PI=FALSE)+
+              xlab("Year") + ylab("Price") +
+              guides(colour=guide_legend(title="Forecast")))
+    }
+    #Seasonal Naive
+    if(input$forecasting_method == 'Seasonal Naive' && input$stock_name != 'Selected stock'){
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
+      )
+      my_ts = my_ts[,4]
+      myts2 = xts2ts(my_ts, freq = 364.25)
+      my_h =69
+      print(autoplot(myts2) +
+              autolayer(snaive(myts2, h=my_h),
+                        series="Seasonal naïve", PI=FALSE) +
+              xlab("Year") + ylab("Price") +
+              guides(colour=guide_legend(title="Forecast")))
+    }
     #MA
     if(input$forecasting_method == 'MA' && input$stock_name != 'Select stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
