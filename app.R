@@ -22,7 +22,7 @@ ui = shinyUI(fluidPage(
   #Stock, domain, method and confidence interval selection
   sidebarPanel(
     width = 3,
-    selectizeInput('stock_name', 'Stock', my_symbols[,1], selected = 'AAPL'),
+    selectizeInput('stock_name', 'Stock', c('Select stock', my_symbols[,1]), selected = 'Select stock'),
     textOutput('selected_stock'),
     textOutput('sector'),
     textOutput('industry'),
@@ -56,9 +56,9 @@ ui = shinyUI(fluidPage(
     absolutePanel(
       width = 250,
       top = 510, left = 50, 
-      selectizeInput('ets_e', 'Error', c('A', 'M', 'N')),
-      selectizeInput('ets_t', 'Trend', c('A', 'M', 'N')),
-      selectizeInput('ets_s', 'Seasonality', c('A', 'M', 'N')),
+      selectizeInput('ets_e', 'Error', c('A', 'M', 'N', 'Z')),
+      selectizeInput('ets_t', 'Trend', c('A', 'M', 'N','Z')),
+      selectizeInput('ets_s', 'Seasonality', c('A', 'M', 'N','Z')),
       checkboxInput('ets_damped', 'Damped')
     )
   ),
@@ -107,7 +107,8 @@ server = shinyServer(function(input, output){
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
-      fit = ets(myts2, model = 'MMN',)
+      ets_model = as.character(c(input$ets_e, input$ets_t, input$ets_s))
+      fit = ets(myts2, model = 'AAN', damped = input$ets_damped)
       plot(forecast(fit))
       #autoplot(my_ts, geom = 'line')  
       #autoplot(my_ts)
