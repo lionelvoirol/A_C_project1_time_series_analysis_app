@@ -6,3 +6,5 @@ Created by a few students of the Master in Business Analytics and the Master in 
 
 ### Project 1
 Code a Shiny app that fetch financial data and that enables the comparison of different forecasting method on the given price of a stock/bond/indice
+
+Technologies and Methods : Shiny, ggplot2, forecast
