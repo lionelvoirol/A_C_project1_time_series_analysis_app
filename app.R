@@ -10,11 +10,8 @@ library(dsa)
 library(quantmod)
 library(forecast)
 library(ggfortify)
-
-
 library(smooth)
 library(Mcomp)
-
 source("ma_function.R")
 
 
@@ -59,13 +56,9 @@ ui = shinyUI(fluidPage(
     condition = "input.forecasting_method == 'MA'",
     absolutePanel(
       width = 250,
-<<<<<<< HEAD
       top = 700, left = 50, 
-      sliderInput('ma_order', "Number of days", min = 0, max =  365, 20, value = 10)
-=======
       sliderInput('ma_order', "Number of days", min = 5, max =  365, 5, value = 10),
       selectizeInput('ma_type', 'Type', c('simple', 'exponential'))
->>>>>>> c8e2c6938a9174483aa19b803ad59bdc3955117c
     )
   ),
   
