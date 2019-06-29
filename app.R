@@ -1,4 +1,4 @@
-setwd("~/R tests")
+setwd("~/A_C_project1_time_series_analysis_app")
 
 #Load libraries
 library(shiny)
@@ -16,10 +16,10 @@ library(smooth)
 library(Mcomp)
 
 source("ma_function.R")
-
+source("ra_functions.R")
 
 #load symbols, hashed as comment
-# my_symbols = stockSymbols()
+my_symbols = stockSymbols()
 
 # Define UI
 ui = shinyUI(fluidPage(
@@ -36,7 +36,7 @@ ui = shinyUI(fluidPage(
     textOutput('industry'),
     dateInput('start_time', 'Start Date', value = Sys.Date()- 365 *5),
     dateInput('end_time', 'End Date'),
-    selectizeInput('forecasting_method', 'Method', c('Select method','Naive', 'Mean', 'Seasonal Naive', 'MA', 'ETS'))
+    selectizeInput('forecasting_method', 'Method', c('Select method','Return Tendencies','Naive', 'Mean', 'Seasonal Naive', 'MA', 'ETS'))
     #method to include  c('Select method', 'MA', 'ARIMA', 'ETS', 'GARCH', 'LSTM')
     
   ),
@@ -48,6 +48,16 @@ ui = shinyUI(fluidPage(
       width = 250,
       top = 550, left = 50, 
       sliderInput('days_forecast', 'Days to forecast', min = 0, max =  365, value = 15)
+    )
+  ),
+  
+  #Parameters for "Return Tendencies"
+  
+  conditionalPanel(
+    condition = "input.forecasting_method == 'Return Tendencies'",
+    absolutePanel(
+      width = 250,
+      selectizeInput('return_method', 'method', c('percent return','return'))
     )
   ),
   
@@ -152,6 +162,30 @@ server = shinyServer(function(input, output){
               xlab("Year") + ylab("Price") +
               guides(colour=guide_legend(title="Forecast")))
     }
+    
+    # Return Tendencies
+    if(input$forecasting_method == 'Return Tendencies' && input$stock_name != 'Select stock'){
+      
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
+      )
+      my_ts_1 = my_ts[,4]
+      myts2 = xts2ts(my_ts_1, freq = 364.25)
+      par(mfrow=c(2,2))
+      plot(myts2)
+      
+      days_names <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+      barplot(week_day_return(my_ts, input$return_method), main = "Return average by day of the week",
+              xlab = "Weekday", col = c("darkviolet", "khaki"),
+              names.arg = days_names)
+      months_names <- c("January", "February", "March", "April", "May", "June", "July", "August", "September",
+                        "October", "November", "December")
+      barplot(monthly_return(my_ts, input$return_method), main = "Return average by month of the year",
+              xlab = "Month", col = c("darkviolet", "khaki"),
+              names.arg = months_names)
+      par(mfrow=c(1,1))
+    }
+    
     #MA
     if(input$forecasting_method == 'MA' && input$stock_name != 'Select stock'){
 
