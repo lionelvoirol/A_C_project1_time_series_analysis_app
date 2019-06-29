@@ -1,4 +1,5 @@
-setwd("~/R tests")
+#set wd
+setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
 
 #Load libraries
 library(shiny)
