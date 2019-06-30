@@ -1,4 +1,9 @@
-setwd("~/A_C_project1_time_series_analysis_app")
+#set wd Victor
+#setwd("~/A_C_project1_time_series_analysis_app")
+
+#set wd LV
+setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
+
 
 #Load libraries
 library(shiny)
@@ -10,11 +15,8 @@ library(dsa)
 library(quantmod)
 library(forecast)
 library(ggfortify)
-
-
 library(smooth)
 library(Mcomp)
-
 source("ma_function.R")
 source("ra_functions.R")
 
@@ -46,8 +48,10 @@ ui = shinyUI(fluidPage(
     condition = "input.forecasting_method != 'Select method'",
     absolutePanel(
       width = 250,
-      top = 550, left = 50, 
-      sliderInput('days_forecast', 'Days to forecast', min = 0, max =  365, value = 15)
+      top = 530, left = 50, 
+      sliderInput('days_forecast', 'Days to forecast', min = 0, max =  365, value = 15),
+      selectizeInput('pred_interval', 'Prediction Interval', c('99', '95', '90', '80','70'), selected = '95')
+      
     )
   ),
   
@@ -67,6 +71,7 @@ ui = shinyUI(fluidPage(
     condition = "input.forecasting_method == 'MA'",
     absolutePanel(
       width = 250,
+      top = 700, left = 50, 
       sliderInput('ma_order', "Number of days", min = 5, max =  365, 5, value = 10),
       selectizeInput('ma_type', 'Type', c('simple', 'exponential'))
     )
@@ -84,7 +89,7 @@ ui = shinyUI(fluidPage(
     condition = "input.forecasting_method == 'ETS'",
     absolutePanel(
       width = 250,
-      top = 600, left = 50, 
+      top = 700, left = 50, 
       selectizeInput('ets_e', 'Error', c('A', 'M', 'N', 'Z'), selected = 'Z'),
       selectizeInput('ets_t', 'Trend', c('A', 'M', 'N','Z'), selected = 'Z'),
       selectizeInput('ets_s', 'Seasonality', c('A', 'M', 'N','Z'), selected = 'Z'),
