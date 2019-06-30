@@ -61,6 +61,7 @@ ui = shinyUI(fluidPage(
     condition = "input.forecasting_method == 'Return Tendencies'",
     absolutePanel(
       width = 250,
+      top = 700, left = 50, 
       selectizeInput('return_method', 'method', c('percent return','return'))
     )
   ),
