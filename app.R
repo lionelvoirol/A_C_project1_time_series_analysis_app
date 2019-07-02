@@ -184,12 +184,12 @@ server = shinyServer(function(input, output){
       
       days_names <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
       barplot(week_day_return(my_ts, input$return_method), main = "Return average by day of the week",
-              xlab = "Weekday", col = c("darkviolet", "khaki"),
+              xlab = "Weekday", col=ifelse(week_day_return(my_ts, input$return_method)>0,"green","red"),
               names.arg = days_names)
       months_names <- c("January", "February", "March", "April", "May", "June", "July", "August", "September",
                         "October", "November", "December")
       barplot(monthly_return(my_ts, input$return_method), main = "Return average by month of the year",
-              xlab = "Month", col = c("darkviolet", "khaki"),
+              xlab = "Month", col=ifelse(monthly_return(my_ts, input$return_method)>0,"green","red"),
               names.arg = months_names)
       par(mfrow=c(1,1))
     }
