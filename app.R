@@ -4,6 +4,9 @@ setwd("~/A_C_project1_time_series_analysis_app")
 #set wd LV
 #setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
 
+#wd thib
+setwd("~/Desktop/GithubRepo/A_C_project1_time_series_analysis_app")
+#Bonjour voici le test de thibeault
 
 #Load libraries
 library(shiny)
@@ -60,6 +63,7 @@ ui = shinyUI(fluidPage(
     condition = "input.forecasting_method == 'Return Tendencies'",
     absolutePanel(
       width = 250,
+      top = 700, left = 50, 
       selectizeInput('return_method', 'method', c('percent return','return'))
     )
   ),
@@ -171,8 +175,7 @@ server = shinyServer(function(input, output){
     if(input$forecasting_method == 'Return Tendencies' && input$stock_name != 'Select stock'){
       
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time
-      )
+                               from = input$start_time, to = input$end_time)
       my_ts_1 = my_ts[,4]
       myts2 = xts2ts(my_ts_1, freq = 364.25)
       par(mfrow=c(2,2))
@@ -180,12 +183,12 @@ server = shinyServer(function(input, output){
       
       days_names <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
       barplot(week_day_return(my_ts, input$return_method), main = "Return average by day of the week",
-              xlab = "Weekday", col = c("darkviolet", "khaki"),
+              xlab = "Weekday", col=ifelse(week_day_return(my_ts, input$return_method)>0,"green","red"),
               names.arg = days_names)
       months_names <- c("January", "February", "March", "April", "May", "June", "July", "August", "September",
                         "October", "November", "December")
       barplot(monthly_return(my_ts, input$return_method), main = "Return average by month of the year",
-              xlab = "Month", col = c("darkviolet", "khaki"),
+              xlab = "Month", col=ifelse(monthly_return(my_ts, input$return_method)>0,"green","red"),
               names.arg = months_names)
       par(mfrow=c(1,1))
     }
