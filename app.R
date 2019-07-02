@@ -173,8 +173,7 @@ server = shinyServer(function(input, output){
     if(input$forecasting_method == 'Return Tendencies' && input$stock_name != 'Select stock'){
       
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time
-      )
+                               from = input$start_time, to = input$end_time)
       my_ts_1 = my_ts[,4]
       myts2 = xts2ts(my_ts_1, freq = 364.25)
       par(mfrow=c(2,2))
