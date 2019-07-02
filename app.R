@@ -1,8 +1,8 @@
 #set wd Victor
-#setwd("~/A_C_project1_time_series_analysis_app")
+setwd("~/A_C_project1_time_series_analysis_app")
 
 #set wd LV
-setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
+#setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
 
 
 #Load libraries
@@ -12,7 +12,6 @@ library(ggplot2)
 library(shinyTime)
 library(tseries)
 library(dsa)
-library(quantmod)
 library(forecast)
 library(ggfortify)
 library(smooth)
