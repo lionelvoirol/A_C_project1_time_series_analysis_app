@@ -190,6 +190,16 @@ server = shinyServer(function(input, output){
       barplot(monthly_return(my_ts, input$return_method), main = "Return average by month of the year",
               xlab = "Month", col=ifelse(monthly_return(my_ts, input$return_method)>0,"green","red"),
               names.arg = months_names)
+      
+      names <- c(input$stock_name, "" , "S&P 500","", "Gold", "", "Bitcoin $", "")
+      barplot(alternative_assets(my_ts, input$start_time, input$end_time, input$return_method), 
+              main = "Comparison to other assets",
+              names.arg = names,
+              col=c("purple","khaki"),
+              space=c(2,0,2,0,2,0,2,0))
+              legend("top", legend = c("average return", "average variance"), 
+              fill = c("purple", "khaki"))
+              
       par(mfrow=c(1,1))
     }
     
