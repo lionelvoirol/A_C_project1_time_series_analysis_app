@@ -81,3 +81,36 @@ monthly_return <- function(series, method){
   
   return(months)
 }
+
+alternative_assets <- function(series, start, finish, method){
+  if (method == "percent return"){
+    SPX <- getSymbols("^GSPC",auto.assign = FALSE, from = start, to = finish)
+    mean_SPX <- mean(na.omit(exp(diff(log(Cl(SPX))))-1))
+    var_SPX <- var(na.omit(exp(diff(log(Cl(SPX))))-1))
+    GLD <- getSymbols("GLD",auto.assign = FALSE, from = start, to = finish)
+    mean_GLD <- mean(na.omit(exp(diff(log(Cl(GLD))))-1))
+    var_GLD <- var(na.omit(exp(diff(log(Cl(GLD))))-1))
+    BTC <- getSymbols("BTC-USD",auto.assign = FALSE, from = start, to = finish)
+    mean_BTC <- mean(na.omit(exp(diff(log(Cl(BTC))))-1))
+    var_BTC <- var(na.omit(exp(diff(log(Cl(BTC))))-1))
+    
+    mean_series <- mean(na.omit(exp(diff(log(Cl(series))))-1))
+    var_series <- var(na.omit(exp(diff(log(Cl(series))))-1))
+  } else if (method == "return"){
+    SPX <- getSymbols("^GSPC",auto.assign = FALSE, from = start, to = finish)
+    mean_SPX <- mean(na.omit(diff(Cl(SPX))))
+    var_SPX <- var(na.omit(diff(Cl(SPX))))
+    GLD <- getSymbols("GLD",auto.assign = FALSE, from = start, to = finish)
+    mean_GLD <- mean(na.omit(diff(Cl(GLD))))
+    var_GLD <- var(na.omit(diff(Cl(GLD))))
+    BTC <- getSymbols("BTC-USD",auto.assign = FALSE, from = start, to = finish)
+    mean_BTC <- mean(na.omit(diff(Cl(BTC))))
+    var_BTC <- var(na.omit(diff(Cl(BTC))))
+    
+    mean_series <- mean(na.omit(diff(Cl(series))))
+    var_series <- var(na.omit(diff(Cl(series))))
+  }
+  data <- c(mean_series, var_series, mean_SPX, var_SPX, mean_GLD, var_GLD, mean_BTC, var_BTC)
+  return(data)
+}
+  
