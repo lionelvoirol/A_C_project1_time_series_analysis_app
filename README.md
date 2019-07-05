@@ -35,4 +35,5 @@ forecast https://otexts.com/fpp2/
 **Erwan Guyomarch**  
 **Victor Mitchell**  
 **Thibault Pierotti**  
+**Jean Sutter**  
 **Lionel Voirol**  
