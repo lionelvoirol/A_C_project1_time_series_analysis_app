@@ -27,9 +27,9 @@ Created by a few students of the Master in Business Analytics and the Master in 
 Code a Shiny app that fetch financial data and that enables the comparison of different forecasting method on the given price of a stock/bond/indice
 
 ## Built with
-Shiny https://ggplot2.tidyverse.org/index.html
-ggplot https://shiny.rstudio.com
-forecast https://otexts.com/fpp2/
+Shiny https://ggplot2.tidyverse.org/index.html  
+ggplot https://shiny.rstudio.com  
+forecast https://otexts.com/fpp2/  
 
 ## Authors
 **Erwan Guyomarch**
