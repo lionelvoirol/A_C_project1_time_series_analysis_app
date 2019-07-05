@@ -32,9 +32,7 @@ ggplot https://shiny.rstudio.com
 forecast https://otexts.com/fpp2/
 
 ## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
--**Erwan Guyomarch**
--**Victor Mitchell**
--**Thibault Pierotti**
--**Lionel Voirol**
+**Erwan Guyomarch**
+**Victor Mitchell**
+**Thibault Pierotti**
+**Lionel Voirol**
