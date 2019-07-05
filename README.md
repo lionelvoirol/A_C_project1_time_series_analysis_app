@@ -27,8 +27,8 @@ source("ra_functions.R")
 ```
 
 ## Built with
-Shiny https://ggplot2.tidyverse.org/index.html  
-ggplot https://shiny.rstudio.com  
+Shiny https://shiny.rstudio.com 
+ggplot https://ggplot2.tidyverse.org/index.html   
 forecast https://otexts.com/fpp2/  
 
 ## Authors
