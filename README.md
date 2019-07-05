@@ -4,7 +4,7 @@ Contain code and documents related to the first project of the Analytics &amp; C
 ## Prerequisites
 Install and load listed packages
 
-'''
+```
 library(shiny)
 library(quantmod)
 library(ggplot2)
@@ -17,7 +17,7 @@ library(smooth)
 library(Mcomp)
 source("ma_function.R")
 source("ra_functions.R")
-'''
+```
 
 
 ## Analytics & Chill
