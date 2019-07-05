@@ -32,7 +32,7 @@ ggplot https://shiny.rstudio.com
 forecast https://otexts.com/fpp2/
 
 ## Authors
-Victor Mitchell 
-Erwan Guyomarch
-Thibault Pierotti
-Lionel Voirol
+**Erwan Guyomarch**
+**Victor Mitchell**
+**Thibault Pierotti**
+**Lionel Voirol**
