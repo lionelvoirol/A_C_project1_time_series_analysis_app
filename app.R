@@ -25,7 +25,7 @@ source("ra_functions.R")
 source("armagarch_functions.R")
 
 #load symbols, hashed as comment
-#my_symbols = stockSymbols()
+my_symbols = stockSymbols()
 
 # Define UI
 ui = shinyUI(fluidPage(
@@ -57,7 +57,7 @@ ui = shinyUI(fluidPage(
       width = 250,
       top = 530, left = 50, 
       sliderInput('days_forecast', 'Days to forecast', min = 0, max =  365, value = 15),
-      selectizeInput('pred_interval', 'Prediction Interval', c('99', '95', '90', '80','70'), selected = '95')
+      selectizeInput('pred_interval', 'Prediction Interval', c('99', '95', '90', '80', '70'), selected = '95')
       
     )
   ),
@@ -92,13 +92,18 @@ ui = shinyUI(fluidPage(
       width = 250,
       top = 700, left = 50, 
     selectInput("AR_para", label = h3("AR (p)"), 
-                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4)), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 1), 
     selectInput("MA_para", label = h3("MA (q)"), 
-                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4)),  
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 1),  
     selectInput("lag_variance_para", label = h3("G (p)"), 
-                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4)), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 1), 
     selectInput("lag_res_para", label = h3("ARCH (q)"), 
-                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4)) 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 1),
+    radioButtons("transform", label = h3("Transformation Selection"),
+                 choices = list("Close Price" = "Close", 
+                                "Returns (1st differences)" = "Returns", 
+                                "Log Returns" = "Log Returns"), 
+                 selected = "Returns")
     )
   ),
   
@@ -118,7 +123,11 @@ ui = shinyUI(fluidPage(
   
   #main plot
   mainPanel(
-    plotOutput("my_plot")
+    plotOutput("my_plot"),
+    
+  #table output
+    tableOutput("view"),
+    tableOutput("view2")
   )
   
 ))
@@ -244,12 +253,25 @@ server = shinyServer(function(input, output){
     
     #ARIMA-GARCH
     if(input$forecasting_method == 'Arima-Garch' && input$stock_name != 'Select stock'){
-      
       my_ts <- getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, too = input$end_time
       )
-      tableOutput(stationarity_test(my_ts))
+      my_ts = my_ts[,4]
+      plot(my_ts)
+      serie_variants <- c("Close","Returns","Log Returns")
+      table_complete <- cbind(serie_variants, stationarity_test(my_ts))
+      colnames(table_complete) <- c("Transformation of the series", "p-value of the ADF test")
       
+      output$view <- renderTable({
+        table_complete
+      })
+      
+      mat <- garma_model(my_ts, input$AR_para, input$MA_para,
+                  input$lag_variance_para, input$lag_res_para,
+                  input$pred_interval, input$transform, my_ts[length(my_ts)])
+      output$view2 <- renderTable({
+        mat
+      })
       
     }
     
