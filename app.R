@@ -5,7 +5,7 @@ setwd("~/A_C_project1_time_series_analysis_app")
 #setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
 
 #wd thib
-setwd("~/Desktop/GithubRepo/A_C_project1_time_series_analysis_app")
+#setwd("~/Desktop/GithubRepo/A_C_project1_time_series_analysis_app")
 #Bonjour voici le test de thibeault
 
 #Load libraries
@@ -19,8 +19,11 @@ library(forecast)
 library(ggfortify)
 library(smooth)
 library(Mcomp)
+library(rugarch)
+library(tseries)
 source("ma_function.R")
 source("ra_functions.R")
+source("armagarch_functions.R")
 
 #load symbols, hashed as comment
 my_symbols = stockSymbols()
@@ -40,7 +43,10 @@ ui = shinyUI(fluidPage(
     textOutput('industry'),
     dateInput('start_time', 'Start Date', value = Sys.Date()- 365 *5),
     dateInput('end_time', 'End Date'),
-    selectizeInput('forecasting_method', 'Method', c('Select method','Return Tendencies','Naive', 'Mean', 'Seasonal Naive', 'MA', 'ETS'))
+    selectizeInput('forecasting_method', 'Method', 
+                   c('Select method','Return Tendencies',
+                     'Naive', 'Mean', 'Seasonal Naive', 'MA', 'ETS',
+                     'Arima-Garch'))
     #method to include  c('Select method', 'MA', 'ARIMA', 'ETS', 'GARCH', 'LSTM')
     
   ),
@@ -80,11 +86,21 @@ ui = shinyUI(fluidPage(
     )
   ),
   
-  #Parameters for ARIMA method
+  #Parameters for ARIMA-GARCH method
   conditionalPanel(
-    condition = "input.forecasting_method == 'ARIMA'",
-    selectInput("smoothMethod", "Method",
-                list("lm", "glm", "gam", "loess", "rlm"))
+    condition = "input.forecasting_method == 'Arima-Garch'",
+    absolutePanel(
+      width = 250,
+      top = 700, left = 50, 
+    selectInput("AR_para", label = h3("AR (p)"), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4)), 
+    selectInput("MA_para", label = h3("MA (q)"), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4)),  
+    selectInput("lag_variance_para", label = h3("G (p)"), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4)), 
+    selectInput("lag_res_para", label = h3("ARCH (q)"), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4)) 
+    )
   ),
   
   #Parameters for ETS method
@@ -99,12 +115,6 @@ ui = shinyUI(fluidPage(
       checkboxInput('ets_damped', 'Damped'),
       textOutput('selected_ets_model')
     )
-  ),
-  #Parameters for GARCH method
-  conditionalPanel(
-    condition = "input.forecasting_method == 'GARCH'",
-    selectInput("smoothMethod", "Method",
-                list("lm", "glm", "gam", "loess", "rlm"))
   ),
   
   #main plot
@@ -231,6 +241,17 @@ server = shinyServer(function(input, output){
       print(autoplot(forecast(fit)))
       #autoplot(my_ts, geom = 'line')  
       #autoplot(my_ts)
+    }
+    
+    #ARIMA-GARCH
+    if(input$forecasting_method == 'Arima-Garch' && input$stock_name != 'Select stock'){
+      
+      my_ts <- getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, too = input$end_time
+      )
+      tableOutput(stationarity_test(my_ts))
+      
+      
     }
     
   })
