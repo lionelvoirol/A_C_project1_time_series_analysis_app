@@ -1,12 +1,11 @@
 #set wd Victor
-setwd("~/A_C_project1_time_series_analysis_app")
+#setwd("~/A_C_project1_time_series_analysis_app")
 
 #set wd LV
-#setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
+setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
 
 #wd thib
 #setwd("~/Desktop/GithubRepo/A_C_project1_time_series_analysis_app")
-#Bonjour voici le test de thibeault
 
 #Load libraries
 library(shiny)
@@ -26,7 +25,7 @@ source("ra_functions.R")
 source("armagarch_functions.R")
 
 #load symbols, hashed as comment
-my_symbols = stockSymbols()
+#my_symbols = stockSymbols()
 
 # Define UI
 ui = shinyUI(fluidPage(
@@ -238,7 +237,7 @@ server = shinyServer(function(input, output){
       myts2 = xts2ts(my_ts, freq = 364.25)
       ets_model = as.character(paste(input$ets_e, input$ets_t, input$ets_s, sep =''))
       fit = ets(myts2, model = ets_model, damped = input$ets_damped)
-      print(autoplot(forecast(fit)))
+      print(autoplot(forecast(fit, h= input$days_forecast, level = as.numeric(input$pred_interval))))
       #autoplot(my_ts, geom = 'line')  
       #autoplot(my_ts)
     }
