@@ -92,18 +92,18 @@ ui = shinyUI(fluidPage(
       width = 250,
       top = 700, left = 50, 
     selectInput("AR_para", label = h3("AR (p)"), 
-                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 1), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2), 
     selectInput("MA_para", label = h3("MA (q)"), 
-                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 1),  
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2),  
     selectInput("lag_variance_para", label = h3("G (p)"), 
-                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 1), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2), 
     selectInput("lag_res_para", label = h3("ARCH (q)"), 
-                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 1),
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2),
     radioButtons("transform", label = h3("Transformation Selection"),
                  choices = list("Close Price" = "Close", 
                                 "Returns (1st differences)" = "Returns", 
                                 "Log Returns" = "Log Returns"), 
-                 selected = "Returns")
+                 selected = "Log Returns")
     )
   ),
   
@@ -253,28 +253,54 @@ server = shinyServer(function(input, output){
     
     #ARIMA-GARCH
     if(input$forecasting_method == 'Arima-Garch' && input$stock_name != 'Select stock'){
-      my_ts <- getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, too = input$end_time
-      )
+      
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time)
+      
       my_ts = my_ts[,4]
-      plot(my_ts)
+      myts2 = xts2ts(my_ts, freq = 364.25)
+      
+      # Adf - Test Table Info
       serie_variants <- c("Close","Returns","Log Returns")
       table_complete <- cbind(serie_variants, stationarity_test(my_ts))
       colnames(table_complete) <- c("Transformation of the series", "p-value of the ADF test")
+    
+      # Arima-Garch Table Info
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time)
+      if(input$transform == "Close"){
+        my_ts_for_garch <- my_ts[,4]
+      } else if(input$transform =="Returns"){
+        my_ts_for_garch <- na.omit(diff(my_ts[,4]))
+      } else if(input$transform =="Log Returns"){
+        my_ts_for_garch <- na.omit(diff(log(my_ts[,4])))
+      }
+      # (GLD[,4] , "1" , "1", "1", "1", "90", "Returns", 3914)
+      mat <- garma_model(my_ts_for_garch, input$AR_para, input$MA_para,
+                         input$lag_variance_para, input$lag_res_para,
+                         input$pred_interval, input$transform, Cl(my_ts[length(my_ts_for_garch)]),
+                         input$days_forecast)
       
+      # Adf - Test Table Creation
       output$view <- renderTable({
         table_complete
       })
       
-      mat <- garma_model(my_ts, input$AR_para, input$MA_para,
-                  input$lag_variance_para, input$lag_res_para,
-                  input$pred_interval, input$transform, my_ts[length(my_ts)])
+      # Arima-Garch forecast Table Creation
       output$view2 <- renderTable({
-        mat
+        na.omit(mat)
       })
       
-    }
+      priceandempty <- c(as.numeric(Cl(my_ts)), rep(NA, input$days_forecast))
+      
+      plot(priceandempty, type="l")
+      lines(mat[,2], col ="purple", lty = 2)
+      lines(mat[,1], col ="red", lty = 2)
+      lines(mat[,3], col ="red", lty = 2)
+     
+     
     
+    }
   })
   output$selected_stock = renderText({
     my_symbols[my_symbols$Symbol == input$stock_name, 2]
