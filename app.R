@@ -7,7 +7,6 @@ setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_ser
 #wd thib
 #setwd("~/Desktop/GithubRepo/A_C_project1_time_series_analysis_app")
 
-
 #Load libraries
 library(shiny)
 library(quantmod)
@@ -19,11 +18,14 @@ library(forecast)
 library(ggfortify)
 library(smooth)
 library(Mcomp)
+library(rugarch)
+library(tseries)
 source("ma_function.R")
 source("ra_functions.R")
+source("armagarch_functions.R")
 
 #load symbols, hashed as comment
-#my_symbols = stockSymbols()
+my_symbols = stockSymbols()
 
 # Define UI
 ui = shinyUI(fluidPage(
@@ -40,7 +42,10 @@ ui = shinyUI(fluidPage(
     textOutput('industry'),
     dateInput('start_time', 'Start Date', value = Sys.Date()- 365 *5),
     dateInput('end_time', 'End Date'),
-    selectizeInput('forecasting_method', 'Method', c('Select method','Return Tendencies','Naive', 'Mean', 'Seasonal Naive', 'MA', 'ETS'))
+    selectizeInput('forecasting_method', 'Method', 
+                   c('Select method','Return Tendencies',
+                     'Naive', 'Mean', 'Seasonal Naive', 'MA', 'ETS',
+                     'Arima-Garch'))
     #method to include  c('Select method', 'MA', 'ARIMA', 'ETS', 'GARCH', 'LSTM')
     
   ),
@@ -52,7 +57,7 @@ ui = shinyUI(fluidPage(
       width = 250,
       top = 530, left = 50, 
       sliderInput('days_forecast', 'Days to forecast', min = 0, max =  365, value = 15),
-      selectizeInput('pred_interval', 'Prediction Interval', c('99', '95', '90', '80','70'), selected = '95')
+      selectizeInput('pred_interval', 'Prediction Interval', c('99', '95', '90', '80', '70'), selected = '95')
       
     )
   ),
@@ -80,11 +85,26 @@ ui = shinyUI(fluidPage(
     )
   ),
   
-  #Parameters for ARIMA method
+  #Parameters for ARIMA-GARCH method
   conditionalPanel(
-    condition = "input.forecasting_method == 'ARIMA'",
-    selectInput("smoothMethod", "Method",
-                list("lm", "glm", "gam", "loess", "rlm"))
+    condition = "input.forecasting_method == 'Arima-Garch'",
+    absolutePanel(
+      width = 250,
+      top = 700, left = 50, 
+    selectInput("AR_para", label = h3("AR (p)"), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2), 
+    selectInput("MA_para", label = h3("MA (q)"), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2),  
+    selectInput("lag_variance_para", label = h3("G (p)"), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2), 
+    selectInput("lag_res_para", label = h3("ARCH (q)"), 
+                choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2),
+    radioButtons("transform", label = h3("Transformation Selection"),
+                 choices = list("Close Price" = "Close", 
+                                "Returns (1st differences)" = "Returns", 
+                                "Log Returns" = "Log Returns"), 
+                 selected = "Log Returns")
+    )
   ),
   
   #Parameters for ETS method
@@ -100,16 +120,14 @@ ui = shinyUI(fluidPage(
       textOutput('selected_ets_model')
     )
   ),
-  #Parameters for GARCH method
-  conditionalPanel(
-    condition = "input.forecasting_method == 'GARCH'",
-    selectInput("smoothMethod", "Method",
-                list("lm", "glm", "gam", "loess", "rlm"))
-  ),
   
   #main plot
   mainPanel(
-    plotOutput("my_plot")
+    plotOutput("my_plot"),
+    
+  #table output
+    tableOutput("view"),
+    tableOutput("view2")
   )
   
 ))
@@ -227,12 +245,62 @@ server = shinyServer(function(input, output){
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
       ets_model = as.character(paste(input$ets_e, input$ets_t, input$ets_s, sep =''))
-      fit = ets(myts2, model = ets_model, damped = input$ets_damped,)
+      fit = ets(myts2, model = ets_model, damped = input$ets_damped)
       print(autoplot(forecast(fit, h= input$days_forecast, level = as.numeric(input$pred_interval))))
       #autoplot(my_ts, geom = 'line')  
       #autoplot(my_ts)
     }
     
+    #ARIMA-GARCH
+    if(input$forecasting_method == 'Arima-Garch' && input$stock_name != 'Select stock'){
+      
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time)
+      
+      my_ts = my_ts[,4]
+      myts2 = xts2ts(my_ts, freq = 364.25)
+      
+      # Adf - Test Table Info
+      serie_variants <- c("Close","Returns","Log Returns")
+      table_complete <- cbind(serie_variants, stationarity_test(my_ts))
+      colnames(table_complete) <- c("Transformation of the series", "p-value of the ADF test")
+    
+      # Arima-Garch Table Info
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time)
+      if(input$transform == "Close"){
+        my_ts_for_garch <- my_ts[,4]
+      } else if(input$transform =="Returns"){
+        my_ts_for_garch <- na.omit(diff(my_ts[,4]))
+      } else if(input$transform =="Log Returns"){
+        my_ts_for_garch <- na.omit(diff(log(my_ts[,4])))
+      }
+      # (GLD[,4] , "1" , "1", "1", "1", "90", "Returns", 3914)
+      mat <- garma_model(my_ts_for_garch, input$AR_para, input$MA_para,
+                         input$lag_variance_para, input$lag_res_para,
+                         input$pred_interval, input$transform, Cl(my_ts[length(my_ts_for_garch)]),
+                         input$days_forecast)
+      
+      # Adf - Test Table Creation
+      output$view <- renderTable({
+        table_complete
+      })
+      
+      # Arima-Garch forecast Table Creation
+      output$view2 <- renderTable({
+        na.omit(mat)
+      })
+      
+      priceandempty <- c(as.numeric(Cl(my_ts)), rep(NA, input$days_forecast))
+      
+      plot(priceandempty, type="l")
+      lines(mat[,2], col ="purple", lty = 2)
+      lines(mat[,1], col ="red", lty = 2)
+      lines(mat[,3], col ="red", lty = 2)
+     
+     
+    
+    }
   })
   output$selected_stock = renderText({
     my_symbols[my_symbols$Symbol == input$stock_name, 2]
