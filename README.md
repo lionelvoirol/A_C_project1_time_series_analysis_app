@@ -22,6 +22,8 @@ library(forecast)
 library(ggfortify)
 library(smooth)
 library(Mcomp)
+library(rugarch)
+library(tseries)
 source("ma_function.R")
 source("ra_functions.R")
 ```
