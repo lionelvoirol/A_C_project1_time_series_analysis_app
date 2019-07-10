@@ -22,6 +22,8 @@ library(forecast)
 library(ggfortify)
 library(smooth)
 library(Mcomp)
+library(rugarch)
+library(tseries)
 source("ma_function.R")
 source("ra_functions.R")
 ```
@@ -32,8 +34,8 @@ ggplot https://ggplot2.tidyverse.org/index.html
 forecast https://otexts.com/fpp2/  
 
 ## Authors
-**Erwan Guyomarch**  
-**Victor Mitchell**  
-**Thibault Pierotti**  
-**Jean Sutter**  
-**Lionel Voirol**  
+**Erwan Guyomarch**  ([github](https://github.com/misurida))  
+**Victor Mitchell**  ([github](https://github.com/V-Mitch))    
+**Thibault Pierotti**  ([github](https://github.com/thibpiero))    
+**Jean Sutter**     
+**Lionel Voirol**  ([github](https://github.com/lionelvoirol))
