@@ -25,12 +25,17 @@ week_day_return <- function(series, method){
   #get the week day expressed in the user system language
   my_dates = c('2007-01-08', '2007-01-09', '2007-01-10', '2007-01-11', '2007-01-12')
   my_days = weekdays(as.Date(my_dates))
-  mon <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[1]))]))
-  tue <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[2]))]))
-  wed <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[3]))]))
-  thu <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[4]))]))
-  fri <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[5]))]))
-  days <- c(mon,tue,wed,thu,fri)
+  mon <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[1]))])), 
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[1]))])))
+  tue <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[2]))])),
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[2]))])))
+  wed <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[3]))])),
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[3]))])))
+  thu <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[4]))])),
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[4]))])))
+  fri <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[5]))])),
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[5]))])))
+  days <- c(mon,tue,wed,thu,fri) * 100
   
   return(days)
 }
@@ -65,21 +70,33 @@ monthly_return <- function(series, method){
   
   my_months = months(as.Date(my_dates))
   
-  jan <- mean(as.numeric(series$return_p[(which(series$month == my_months[1]))]))
-  feb <- mean(as.numeric(series$return_p[(which(series$month == my_months[2]))]))
-  mar <- mean(as.numeric(series$return_p[(which(series$month == my_months[3]))]))
-  apr <- mean(as.numeric(series$return_p[(which(series$month == my_months[4]))]))
-  may <- mean(as.numeric(series$return_p[(which(series$month == my_months[5]))]))
-  jun <- mean(as.numeric(series$return_p[(which(series$month == my_months[6]))]))
-  jul <- mean(as.numeric(series$return_p[(which(series$month == my_months[7]))]))
-  aug <- mean(as.numeric(series$return_p[(which(series$month == my_months[8]))]))
-  sep <- mean(as.numeric(series$return_p[(which(series$month == my_months[9]))]))
-  oct <- mean(as.numeric(series$return_p[(which(series$month == my_months[10]))]))
-  nov <- mean(as.numeric(series$return_p[(which(series$month == my_months[11]))]))
-  dec <- mean(as.numeric(series$return_p[(which(series$month == my_months[12]))]))
+  jan <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[1]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[1]))])))
+  feb <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[2]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[2]))])))
+  mar <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[3]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[3]))])))
+  apr <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[4]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[4]))])))
+  may <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[5]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[5]))])))
+  jun <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[6]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[6]))])))
+  jul <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[7]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[7]))])))
+  aug <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[8]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[8]))])))
+  sep <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[9]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[9]))])))
+  oct <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[10]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[10]))])))
+  nov <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[11]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[11]))])))
+  dec <- c(mean(as.numeric(series$return_p[(which(series$month == my_months[12]))])), 
+           var(as.numeric(series$return_p[(which(series$month == my_months[12]))])))
   months <- c(jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec)
   
-  return(months)
+  return(months) * 100
 }
 
 alternative_assets <- function(series, start, finish, method){
