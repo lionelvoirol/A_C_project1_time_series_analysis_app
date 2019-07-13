@@ -25,12 +25,17 @@ week_day_return <- function(series, method){
   #get the week day expressed in the user system language
   my_dates = c('2007-01-08', '2007-01-09', '2007-01-10', '2007-01-11', '2007-01-12')
   my_days = weekdays(as.Date(my_dates))
-  mon <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[1]))]))
-  tue <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[2]))]))
-  wed <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[3]))]))
-  thu <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[4]))]))
-  fri <- mean(as.numeric(series$return_p[(which(series$day_week == my_days[5]))]))
-  days <- c(mon,tue,wed,thu,fri)
+  mon <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[1]))])), 
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[1]))])))
+  tue <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[2]))])),
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[2]))])))
+  wed <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[3]))])),
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[3]))])))
+  thu <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[4]))])),
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[4]))])))
+  fri <- c(mean(as.numeric(series$return_p[(which(series$day_week == my_days[5]))])),
+           var(as.numeric(series$return_p[(which(series$day_week == my_days[5]))])))
+  days <- c(mon,tue,wed,thu,fri) * 100
   
   return(days)
 }
