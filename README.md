@@ -39,8 +39,8 @@ ggplot https://ggplot2.tidyverse.org/index.html
 forecast https://otexts.com/fpp2/  
 
 ## Authors
-[**Erwan Guyomarch**](https://github.com/misurida) 
-[**Thibault Pierotti**](https://github.com/thibpiero)
-[**Victor Mitchell**](https://github.com/V-Mitch)
+[**Erwan Guyomarch**](https://github.com/misurida)   
+[**Thibault Pierotti**](https://github.com/thibpiero)  
+[**Victor Mitchell**](https://github.com/V-Mitch)  
 **Jean Sutter**  
 [**Lionel Voirol**](https://github.com/lionelvoirol)  
