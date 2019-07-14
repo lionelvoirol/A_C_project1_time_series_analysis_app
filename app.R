@@ -213,7 +213,7 @@ server = shinyServer(function(input, output){
               names.arg = days_names,
               space=c(2,0,2,0,2,0,2,0,2,0),
               ylim = c(min(week_day_return(my_ts, input$return_method)), 
-                       max(week_day_return(my_ts, input$return_method)) + 1.7))
+                       max(week_day_return(my_ts, input$return_method)) * 2))
               
               legend("top", legend = c("positive return", "negative return", "variance"), 
                      inset=c(-0.2,0), xpd = TRUE,
@@ -241,7 +241,7 @@ server = shinyServer(function(input, output){
               names.arg = months_names,
               space=c(2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0),
               ylim = c(min(monthly_return(my_ts, input$return_method)), 
-                       max(monthly_return(my_ts, input$return_method)) + 0.05))
+                       max(monthly_return(my_ts, input$return_method)) * 2 ))
       legend("top", legend = c("positive return", "negative return", "variance"), 
              inset=c(-0.2,0), xpd = TRUE,
              fill = c("green", "red", "darkslateblue"))
