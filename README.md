@@ -39,7 +39,7 @@ ggplot https://ggplot2.tidyverse.org/index.html
 forecast https://otexts.com/fpp2/  
 
 ## Authors
-[**Erwan Guyomarch**](https://github.com/misurida)
+[**Erwan Guyomarch**](https://github.com/misurida)  
 [**David Istvan**](https://github.com/davistvan)  
 [**Thibault Pierotti**](https://github.com/thibpiero)  
 [**Victor Mitchell**](https://github.com/V-Mitch)  
