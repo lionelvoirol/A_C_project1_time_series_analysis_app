@@ -40,6 +40,7 @@ forecast https://otexts.com/fpp2/
 
 ## Authors
 [**Erwan Guyomarch**](https://github.com/misurida) 
+
 [**Victor Mitchell**](https://github.com/V-Mitch)  
 [**Thibault Pierotti**](https://github.com/thibpiero)  
 **Jean Sutter**  
