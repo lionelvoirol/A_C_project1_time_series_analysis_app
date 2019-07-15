@@ -1,5 +1,5 @@
 # Analytics & Chill - Time series Analysis app
-Contain code and documents related to the first project of the Analytics &amp; Chill initiative
+Contains code and documents related to the first project of the Analytics &amp; Chill initiative
 
 ## Analytics & Chill
 This ongoing project was created by a few students of the Master in Business Analytics and the Master in Statistics at the University of Geneva, we seek to create a forum for the exchange of knowledge and the development of skills in the fields of statistics and data science, all in a fun environment.  We plan to organize our work through discussions and coding sessions to produce projects and develop new skills.
@@ -39,7 +39,8 @@ ggplot https://ggplot2.tidyverse.org/index.html
 forecast https://otexts.com/fpp2/  
 
 ## Authors
-[**Erwan Guyomarch**](https://github.com/misurida)   
+[**Erwan Guyomarch**](https://github.com/misurida)  
+[**David Istvan**](https://github.com/davistvan)  
 [**Thibault Pierotti**](https://github.com/thibpiero)  
 [**Victor Mitchell**](https://github.com/V-Mitch)  
 **Jean Sutter**  
