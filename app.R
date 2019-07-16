@@ -70,7 +70,9 @@ ui = shinyUI(fluidPage(
     absolutePanel(
       width = 250,
       top = 500, left = 50, 
-      sliderInput('days_forecast_naive', 'Days to forecast', min = 0, max =  365, value = 15)
+      sliderInput('days_forecast_naive', 'Days to forecast', min = 0, max =  365, value = 15),
+      selectizeInput('pred_interval_naive', 'Prediction Interval', c('99', '95', '90', '80', '70','60', '50', '40', '30', '20', '10'), selected = '95')
+      
     )
   ),
 
@@ -81,7 +83,9 @@ conditionalPanel(
   absolutePanel(
     width = 250,
     top = 500, left = 50, 
-    sliderInput('days_forecast_mean', 'Days to forecast', min = 0, max =  365, value = 15)
+    sliderInput('days_forecast_mean', 'Days to forecast', min = 0, max =  365, value = 15),
+    selectizeInput('pred_interval_mean', 'Prediction Interval', c('99', '95', '90', '80', '70','60', '50', '40', '30', '20', '10'), selected = '95')
+    
   )
 ),
 
@@ -92,7 +96,9 @@ conditionalPanel(
   absolutePanel(
     width = 250,
     top = 500, left = 50, 
-    sliderInput('days_forecast_seasonal_naive', 'Days to forecast', min = 0, max =  365, value = 15)
+    sliderInput('days_forecast_seasonal_naive', 'Days to forecast', min = 0, max =  365, value = 15),
+    selectizeInput('pred_interval_seasonal_naive', 'Prediction Interval', c('99', '95', '90', '80', '70','60', '50', '40', '30', '20', '10'), selected = '95')
+    
   )
 ),
   
@@ -139,7 +145,7 @@ conditionalPanel(
       width = 250,
       top = 500, left = 50, 
       sliderInput('days_forecast', 'Days to forecast', min = 0, max =  365, value = 15),
-      selectizeInput('pred_interval', 'Prediction Interval', c('99', '95', '90', '80', '70'), selected = '95'),
+      selectizeInput('pred_interval_ets', 'Prediction Interval', c('99', '95', '90', '80', '70','60', '50', '40', '30', '20', '10'), selected = '95'),
       selectizeInput('ets_e', 'Error', c('A', 'M', 'N', 'Z'), selected = 'Z'),
       selectizeInput('ets_t', 'Trend', c('A', 'M', 'N','Z'), selected = 'Z'),
       selectizeInput('ets_s', 'Seasonality', c('A', 'M', 'N','Z'), selected = 'Z'),
@@ -185,8 +191,8 @@ server = shinyServer(function(input, output){
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
       print(autoplot(myts2) +
-              autolayer(meanf(myts2, h=input$days_forecast_mean),
-                        series="Mean", PI=FALSE) +
+              autolayer(meanf(myts2, h=input$days_forecast_mean, level = as.numeric(input$pred_interval_mean)),
+                        series="Mean", PI=T) +
               xlab("Year") + ylab("Price") +
               guides(colour=guide_legend(title="Forecast")))
     }
@@ -198,8 +204,8 @@ server = shinyServer(function(input, output){
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
       print(autoplot(myts2) +
-              autolayer(naive(myts2, h=input$days_forecast_naive),
-                        series = "Naive", PI=FALSE)+
+              autolayer(naive(myts2, h=input$days_forecast_naive, level = as.numeric(input$pred_interval_naive)),
+                        series = "Naive", PI=T)+
               xlab("Year") + ylab("Price") +
               guides(colour=guide_legend(title="Forecast")))
     }
@@ -212,8 +218,8 @@ server = shinyServer(function(input, output){
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
       print(autoplot(myts2) +
-              autolayer(snaive(myts2, h=input$days_forecast_seasonal_naive),
-                        series="Seasonal Naive", PI=FALSE) +
+              autolayer(snaive(myts2, h=input$days_forecast_seasonal_naive, level = as.numeric(input$pred_interval_seasonal_naive)),
+                        series="Seasonal Naive", PI=T) +
               xlab("Year") + ylab("Price") +
               guides(colour=guide_legend(title="Forecast")))
     }
@@ -312,7 +318,7 @@ server = shinyServer(function(input, output){
       myts2 = xts2ts(my_ts, freq = 364.25)
       ets_model = as.character(paste(input$ets_e, input$ets_t, input$ets_s, sep =''))
       fit = ets(myts2, model = ets_model, damped = input$ets_damped)
-      print(autoplot(forecast(fit, h= input$days_forecast, level = as.numeric(input$pred_interval))))
+      print(autoplot(forecast(fit, h= input$days_forecast, level = as.numeric(input$pred_interval_ets))))
       #autoplot(my_ts, geom = 'line')  
       #autoplot(my_ts)
     }
