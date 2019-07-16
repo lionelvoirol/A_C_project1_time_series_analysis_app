@@ -1,8 +1,8 @@
 #set wd Victor
-#setwd("~/A_C_project1_time_series_analysis_app")
+setwd("~/A_C_project1_time_series_analysis_app")
 
 #set wd LV
-setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
+#setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
 
 #wd thib
 #setwd("~/Desktop/GithubRepo/A_C_project1_time_series_analysis_app")
@@ -28,7 +28,7 @@ source("ra_functions.R")
 source("armagarch_functions.R")
 
 #load symbols, hashed as comment
-#my_symbols = stockSymbols()
+my_symbols = stockSymbols()
 
 # Define UI
 ui = shinyUI(fluidPage(
