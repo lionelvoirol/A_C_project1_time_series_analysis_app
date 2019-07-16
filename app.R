@@ -122,6 +122,9 @@ conditionalPanel(
     absolutePanel(
       width = 250,
       top = 500, left = 50,
+      sliderInput('days_forecast_arima_garch', 'Days to forecast', min = 0, max =  365, value = 15),
+      selectizeInput('pred_interval_arima_garch', 'Prediction Interval', c('99', '95', '90', '80', '70','60', '50', '40', '30', '20', '10'), selected = '95'),
+      
       selectInput("AR_para", "AR (p)", 
                   choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2), 
       selectInput("MA_para", "MA (q)", 
@@ -351,8 +354,8 @@ server = shinyServer(function(input, output){
       # (GLD[,4] , "1" , "1", "1", "1", "90", "Returns", 3914)
       mat <- garma_model(my_ts_for_garch, input$AR_para, input$MA_para,
                          input$lag_variance_para, input$lag_res_para,
-                         input$pred_interval, input$transform, Cl(my_ts[length(my_ts_for_garch)]),
-                         input$days_forecast)
+                         input$pred_interval_arima_garch, input$transform, Cl(my_ts[length(my_ts_for_garch)]),
+                         input$days_forecast_arima_garch)
       
       # Adf - Test Table Creation
       output$view <- renderTable({
@@ -364,7 +367,7 @@ server = shinyServer(function(input, output){
         na.omit(mat)
       })
       
-      priceandempty <- c(as.numeric(Cl(my_ts)), rep(NA, input$days_forecast))
+      priceandempty <- c(as.numeric(Cl(my_ts)), rep(NA, input$days_forecast_arima_garch))
       
       plot(priceandempty, type="l")
       lines(mat[,2], col ="purple", lty = 2)
