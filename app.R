@@ -1,3 +1,4 @@
+#### Packages, W-D, Functions ----
 #set wd Victor
 setwd("~/A_C_project1_time_series_analysis_app")
 
@@ -30,12 +31,12 @@ source("armagarch_functions.R")
 #load symbols, hashed as comment
 my_symbols = stockSymbols()
 
-# Define UI
+#### USER INTERFACE Define UI ----
 ui = shinyUI(fluidPage(
   titlePanel("Stock prices"),
   helpText("Display selected stocks and enable comparing different forecasting methods"),
   
-  #Stock, domain, method, forecast and confidence interval selection
+  # Stock, domain, method, forecast and confidence interval selection ####
   sidebarPanel(
     width = 3,
     selectizeInput('stock_name', 'Stock', c('Select stock', my_symbols[,1]), selected = 'Select stock'),
@@ -52,7 +53,7 @@ ui = shinyUI(fluidPage(
     
   ),
   
-  #Parameters for "Return Tendencies"
+  # Parameters for "Return Tendencies" ####
   
   conditionalPanel(
     condition = "input.forecasting_method == 'Return Tendencies'",
@@ -63,7 +64,7 @@ ui = shinyUI(fluidPage(
     )
   ),
 
-  #Parameters for Naive method
+  # Parameters for Naive method ####
   
   conditionalPanel(
     condition = "input.forecasting_method == 'Naive'",
@@ -76,7 +77,7 @@ ui = shinyUI(fluidPage(
     )
   ),
 
-#Parameters for Mean method
+# Parameters for Mean method ####
 
 conditionalPanel(
   condition = "input.forecasting_method == 'Mean'",
@@ -89,7 +90,7 @@ conditionalPanel(
   )
 ),
 
-#Parameters for Seasonal Naive method
+# Parameters for Seasonal Naive method ####
 
 conditionalPanel(
   condition = "input.forecasting_method == 'Seasonal Naive'",
@@ -102,7 +103,7 @@ conditionalPanel(
   )
 ),
   
-  #Parameters for MA method
+  # Parameters for MA method ####
   
   conditionalPanel(
     condition = "input.forecasting_method == 'MA'",
@@ -114,7 +115,7 @@ conditionalPanel(
     )
   ),
   
-  #Parameters for ARIMA-GARCH method
+  # Parameters for ARIMA-GARCH method ####
   
   conditionalPanel(
     condition = "input.forecasting_method == 'Arima-Garch'",
@@ -141,7 +142,7 @@ conditionalPanel(
     )
   ),
   
-  #Parameters for ETS method
+  # Parameters for ETS method ####
   conditionalPanel(
     condition = "input.forecasting_method == 'ETS'",
     absolutePanel(
@@ -157,26 +158,26 @@ conditionalPanel(
     )
   ),
   
-  #main plot
+  # main plot ####
   mainPanel(
     plotOutput("my_plot"),
     
-  #table output
+  # table output ####
     tableOutput("view"),
     tableOutput("view2")
   )
   
 ))
 
-# Define server logic 
+# SERVER Define server logic ----
 server = shinyServer(function(input, output){
   output$my_plot = renderPlot({
     
-    #No selected stock
+    # No selected stock
     if(input$stock_name == 'Select stock'){
     }
 
-    #No method selected
+    # No method selected ####
     if(input$forecasting_method == 'Select method' && input$stock_name != 'Select stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
@@ -186,7 +187,7 @@ server = shinyServer(function(input, output){
       print(autoplot(myts2))
     }
     
-    #Mean
+    # Mean ####
     if(input$forecasting_method == 'Mean' && input$stock_name != 'Selected stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
@@ -199,7 +200,7 @@ server = shinyServer(function(input, output){
               xlab("Year") + ylab("Price") +
               guides(colour=guide_legend(title="Forecast")))
     }
-    #Naive
+    # Naive ####
     if(input$forecasting_method == 'Naive' && input$stock_name != 'Selected stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
@@ -213,7 +214,7 @@ server = shinyServer(function(input, output){
               guides(colour=guide_legend(title="Forecast")))
     }
     
-    #Seasonal Naive
+    # Seasonal Naive ####
     if(input$forecasting_method == 'Seasonal Naive' && input$stock_name != 'Selected stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
@@ -227,7 +228,7 @@ server = shinyServer(function(input, output){
               guides(colour=guide_legend(title="Forecast")))
     }
     
-    # Return Tendencies
+    # Return Tendencies ####
     if(input$forecasting_method == 'Return Tendencies' && input$stock_name != 'Select stock'){
       
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
@@ -296,7 +297,7 @@ server = shinyServer(function(input, output){
       par(mfrow=c(1,1))
     }
     
-    #MA
+    # MA ####
     if(input$forecasting_method == 'MA' && input$stock_name != 'Select stock'){
 
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
@@ -312,7 +313,7 @@ server = shinyServer(function(input, output){
       lines(m_a, col = "purple")
     }
     
-    #ETS
+    # ETS ####
     if(input$forecasting_method == 'ETS' && input$stock_name != 'Select stock'){
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time
@@ -326,7 +327,7 @@ server = shinyServer(function(input, output){
       #autoplot(my_ts)
     }
     
-    #ARIMA-GARCH
+    # ARIMA-GARCH ####
     if(input$forecasting_method == 'Arima-Garch' && input$stock_name != 'Select stock'){
       
       my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
@@ -394,6 +395,6 @@ server = shinyServer(function(input, output){
   })
 })
 
-#Run app
+# Run app ####
 shiny::shinyApp(ui,server)
 
