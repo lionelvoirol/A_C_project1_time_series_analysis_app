@@ -28,17 +28,8 @@ source("ma_function.R")
 source("ra_functions.R")
 source("armagarch_functions.R")
 
-# load symbols, hashed as comment
+#load symbols, hashed as comment
 my_symbols = stockSymbols()
-
-# load currencies and append them to the main list
-currencies <- c("EUR=X","GBP=X","AUD=X","NZD=X","JPY=X","CAD=X","CHF=X")
-currencies_names <- c("EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", 
-                      "USDJPY", "USDCAD", "USDCHF")
-currencies_final <- as.data.frame(cbind(matrix(c(currencies,currencies_names), ncol = 2),
-                          matrix(NA, nrow = 7, ncol = 6))) 
-colnames(currencies_final) <- colnames(my_symbols)
-my_symbols <- merge(currencies_final, my_symbols, all = TRUE)
 
 #### USER INTERFACE Define UI ----
 ui = shinyUI(fluidPage(
@@ -188,8 +179,8 @@ server = shinyServer(function(input, output){
 
     # No method selected ####
     if(input$forecasting_method == 'Select method' && input$stock_name != 'Select stock'){
-      my_ts = na.omit(getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time)
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
@@ -198,8 +189,8 @@ server = shinyServer(function(input, output){
     
     # Mean ####
     if(input$forecasting_method == 'Mean' && input$stock_name != 'Selected stock'){
-      my_ts = na.omit(getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time)
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
@@ -225,8 +216,8 @@ server = shinyServer(function(input, output){
     
     # Seasonal Naive ####
     if(input$forecasting_method == 'Seasonal Naive' && input$stock_name != 'Selected stock'){
-      my_ts = na.omit(getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time)
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
@@ -240,8 +231,8 @@ server = shinyServer(function(input, output){
     # Return Tendencies ####
     if(input$forecasting_method == 'Return Tendencies' && input$stock_name != 'Select stock'){
       
-      my_ts = na.omit(getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time))
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time)
       my_ts_1 = my_ts[,4]
       myts2 = xts2ts(my_ts_1, freq = 364.25)
       par(mfrow=c(2,2))
@@ -309,8 +300,8 @@ server = shinyServer(function(input, output){
     # MA ####
     if(input$forecasting_method == 'MA' && input$stock_name != 'Select stock'){
 
-      my_ts = na.omit(getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time)
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
@@ -324,8 +315,8 @@ server = shinyServer(function(input, output){
     
     # ETS ####
     if(input$forecasting_method == 'ETS' && input$stock_name != 'Select stock'){
-      my_ts = na.omit(getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time)
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time
       )
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
@@ -339,8 +330,8 @@ server = shinyServer(function(input, output){
     # ARIMA-GARCH ####
     if(input$forecasting_method == 'Arima-Garch' && input$stock_name != 'Select stock'){
       
-      my_ts = na.omit(getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time))
+      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
+                               from = input$start_time, to = input$end_time)
       
       my_ts = my_ts[,4]
       myts2 = xts2ts(my_ts, freq = 364.25)
