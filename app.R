@@ -32,11 +32,12 @@ source("armagarch_functions.R")
 my_symbols = stockSymbols()
 
 # load currencies and append them to the main list
+options(stringsAsFactors = FALSE)
 currencies <- c("EUR=X","GBP=X","AUD=X","NZD=X","JPY=X","CAD=X","CHF=X")
 currencies_names <- c("EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", 
                       "USDJPY", "USDCAD", "USDCHF")
 currencies_final <- as.data.frame(cbind(matrix(c(currencies,currencies_names), ncol = 2),
-                          matrix(NA, nrow = 7, ncol = 6))) 
+                          matrix(NA, nrow = 7, ncol = 6)))
 colnames(currencies_final) <- colnames(my_symbols)
 my_symbols <- merge(currencies_final, my_symbols, all = TRUE)
 
