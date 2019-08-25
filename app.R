@@ -1,3 +1,4 @@
+# rsconnect::deployApp("~/A_C_project1_time_series_analysis_app")
 #### Packages, W-D, Functions ----
 #set wd Victor
 #setwd("~/A_C_project1_time_series_analysis_app")
