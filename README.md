@@ -37,6 +37,8 @@ Shiny https://shiny.rstudio.com
 ggplot https://ggplot2.tidyverse.org/index.html  
 forecast https://otexts.com/fpp2/  
 
+CSS format from https://bootswatch.com/
+
 ## Authors
 [**Erwan Guyomarch**](https://github.com/misurida)  
 [**David Istvan**](https://github.com/davistvan)  
