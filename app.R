@@ -23,9 +23,11 @@ library(ggfortify)
 library(smooth)
 library(Mcomp)
 library(rugarch)
+library(tidyRSS)
 source("ma_function.R")
 source("ra_functions.R")
 source("armagarch_functions.R")
+source("news_functions.R")
 
 #load symbols, hashed as comment
 my_symbols = stockSymbols()
@@ -43,6 +45,7 @@ my_symbols <- merge(currencies_final, my_symbols, all = TRUE)
 
 #### USER INTERFACE Define UI ----
 ui = shinyUI(fluidPage(
+  theme = "bootstrap.min.css",
   titlePanel("Stock prices"),
   helpText("Display selected stocks and enable comparing different forecasting methods"),
   
@@ -174,7 +177,11 @@ conditionalPanel(
     
   # table output ####
     tableOutput("view"),
-    tableOutput("view2")
+    tableOutput("view2"),
+  
+  # url output ####
+    tableOutput("view3"),
+    htmlOutput("view4")
   )
   
 ))
@@ -305,6 +312,27 @@ server = shinyServer(function(input, output){
               fill = c("purple", "khaki"))
               
       par(mfrow=c(1,1))
+      
+      newspaper <- collect_news(input$stock_name)
+
+      # News - Text Output
+      output$view4 <- renderUI({
+      txtclr1 <- "purple"
+      txtclir2 <- "khaki"
+      line1 <- paste("<a href=",newspaper[1],">",newspaper[2],"</a>")
+      line2 <- paste("<a href=",newspaper[3],">",newspaper[4],"</a>")
+      line3 <- paste("<a href=",newspaper[5],">",newspaper[6],"</a>")
+      line4 <- paste("<a href=",newspaper[7],">",newspaper[8],"</a>")
+      line5 <- paste("<a href=",newspaper[9],">",newspaper[10],"</a>")
+      line6 <- paste("<a href=",newspaper[11],">",newspaper[12],"</a>")
+      line7 <- paste("<a href=",newspaper[13],">",newspaper[14],"</a>")
+      line8 <- paste("<a href=",newspaper[15],">",newspaper[16],"</a>")
+      line9 <- paste("<a href=",newspaper[17],">",newspaper[18],"</a>")
+      line10 <- paste("<a href=",newspaper[19],">",newspaper[20],"</a>")
+      HTML(paste(line1,line2,line3,line4,line5,line6,line7,line8,line9,line10,
+                 sep = "<br/>"))
+      })
+      
     }
     
     # MA ####
