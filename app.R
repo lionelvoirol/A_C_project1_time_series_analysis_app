@@ -1,6 +1,6 @@
 #### Packages, W-D, Functions ----
 #set wd Victor
-setwd("~/A_C_project1_time_series_analysis_app")
+#setwd("~/A_C_project1_time_series_analysis_app")
 
 #set wd LV
 #setwd("~/SUISSE_2015-19/STATISTICS_PROGRAMMING/github_repo/A_C_project1_time_series_analysis_app")
