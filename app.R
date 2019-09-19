@@ -25,22 +25,28 @@ library(smooth)
 library(Mcomp)
 library(rugarch)
 library(tidyRSS)
+library(tidyquant)
 source("ma_function.R")
 source("ra_functions.R")
 source("armagarch_functions.R")
 source("news_functions.R")
 
-#load symbols, hashed as comment
-my_symbols = stockSymbols()
-
+#load symbols, hashed as comment - Data source before 19.09.19
+#my_symbols <- stockSymbols()
+#load symbols - Data source as of 19.09.19
+my_symbols <- tq_index("RUSSELL3000")
 
 # load currencies and append them to the main list
 options(stringsAsFactors = FALSE)
 currencies <- c("EUR=X","GBP=X","AUD=X","NZD=X","JPY=X","CAD=X","CHF=X")
 currencies_names <- c("EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", 
                       "USDJPY", "USDCAD", "USDCHF")
+# With old data source
+#currencies_final <- as.data.frame(cbind(matrix(c(currencies,currencies_names), ncol = 2),
+#                         matrix(NA, nrow = 7, ncol = 6)))
 currencies_final <- as.data.frame(cbind(matrix(c(currencies,currencies_names), ncol = 2),
-                          matrix(NA, nrow = 7, ncol = 6)))
+                          matrix(NA, nrow = 7, ncol = 3)))
+
 colnames(currencies_final) <- colnames(my_symbols)
 my_symbols <- merge(currencies_final, my_symbols, all = TRUE)
 
@@ -54,9 +60,10 @@ ui = shinyUI(fluidPage(
   sidebarPanel(
     width = 3,
     selectizeInput('stock_name', 'Stock', c('Select stock', my_symbols[,1]), selected = 'Select stock'),
-    textOutput('selected_stock'),
+    htmlOutput('selected_stock'),
+    textOutput('company'),
     textOutput('sector'),
-    textOutput('industry'),
+    textOutput('shares_held'),
     dateInput('start_time', 'Start Date', value = Sys.Date()- 365 *5),
     dateInput('end_time', 'End Date'),
     selectizeInput('forecasting_method', 'Method', 
@@ -273,7 +280,7 @@ server = shinyServer(function(input, output){
                        max(week_day_return(my_ts, input$return_method)) * 2))
               
               legend("top", legend = c("positive return", "negative return", "variance"), 
-                     inset=c(-0.2,0), xpd = TRUE,
+                     inset=c(-0.2,0), #xpd = TRUE,
                      fill = c("green", "red", "darkslateblue"))
               
       
@@ -300,7 +307,7 @@ server = shinyServer(function(input, output){
               ylim = c(min(monthly_return(my_ts, input$return_method)), 
                        max(monthly_return(my_ts, input$return_method)) * 2 ))
       legend("top", legend = c("positive return", "negative return", "variance"), 
-             inset=c(-0.2,0), xpd = TRUE,
+             inset=c(-0.2,0), #xpd = TRUE,
              fill = c("green", "red", "darkslateblue"))
       
       names <- c(input$stock_name, "" , "S&P 500","", "Gold", "", "Bitcoin $", "")
@@ -418,13 +425,16 @@ server = shinyServer(function(input, output){
     }
   })
   output$selected_stock = renderText({
-    my_symbols[my_symbols$Symbol == input$stock_name, 2]
+    paste("<b>",my_symbols[my_symbols$symbol == input$stock_name, 2],"</b>")
+  })
+  output$company = renderText({
+    paste("stock symbol: ",my_symbols[my_symbols$symbol == input$stock_name, 1])
   })
   output$sector = renderText({
-    my_symbols[my_symbols$Symbol == input$stock_name, 6]
+    paste("sector: " ,my_symbols[my_symbols$symbol == input$stock_name, 4])
   })
-  output$industry = renderText({
-    my_symbols[my_symbols$Symbol == input$stock_name, 7]
+  output$shares_held = renderText({
+    paste("shares held: ",my_symbols[my_symbols$symbol == input$stock_name, 5])
   })
   output$initial_date = renderText({
     index(getSymbols(input$stock_name, auto.assign = F))[1]

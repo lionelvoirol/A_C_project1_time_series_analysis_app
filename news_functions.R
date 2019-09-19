@@ -2,10 +2,11 @@
 
 collect_news <- function(stock_name){
   options(warn=-1)
-  
+  # The search bar requires a very special structure. We respect this with this search
   part1 <- "https://news.google.com/rss/search?q="
   part2 <- "&hl=en-US&gl=US&ceid=US:en"
-  news_source_url <- paste(part1, stock_name, part2, sep = "")
+  name_without_spaces <- str_replace_all( my_symbols[which(my_symbols$symbol == stock_name),2] , " " , "%")
+  news_source_url <- paste(part1, name_without_spaces, "%stock", part2, sep = "")
   news <- tidyfeed(news_source_url)
 
   title1 <- news$item_title[1];title2 <- news$item_title[2];title3 <- news$item_title[3]

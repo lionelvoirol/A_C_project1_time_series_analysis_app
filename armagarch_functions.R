@@ -1,10 +1,5 @@
 # Arima-Garch forecast function
 
-
-GLD <- getSymbols.yahoo("GLD", auto.assign = F)
-
-
-
 stationarity_test <- function(series){
   options(warn=-1)
   
