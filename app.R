@@ -321,7 +321,7 @@ server = shinyServer(function(input, output){
               
       par(mfrow=c(1,1))
       
-      newspaper <- collect_news(input$stock_name)
+      newspaper <- collect_news(my_symbols, input$stock_name)
 
       # News - Text Output
       output$view4 <- renderUI({
