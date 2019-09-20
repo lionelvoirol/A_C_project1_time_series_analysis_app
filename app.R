@@ -31,6 +31,10 @@ source("ra_functions.R")
 source("armagarch_functions.R")
 source("news_functions.R")
 
+# run on the server: deployApp()
+# library(rsconnect)
+# deployApp()
+
 #load symbols, hashed as comment - Data source before 19.09.19
 #my_symbols <- stockSymbols()
 #load symbols - Data source as of 19.09.19
