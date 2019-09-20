@@ -32,6 +32,10 @@ source("ra_functions.R")
 source("armagarch_functions.R")
 source("news_functions.R")
 
+# run on the server: deployApp()
+# library(rsconnect)
+# deployApp()
+
 #load symbols, hashed as comment - Data source before 19.09.19
 #my_symbols <- stockSymbols()
 #load symbols - Data source as of 19.09.19
@@ -322,7 +326,7 @@ server = shinyServer(function(input, output){
               
       par(mfrow=c(1,1))
       
-      newspaper <- collect_news(input$stock_name)
+      newspaper <- collect_news(my_symbols, input$stock_name)
 
       # News - Text Output
       output$view4 <- renderUI({
