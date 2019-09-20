@@ -71,10 +71,10 @@ garma_model <- function(series, ar, ma, g, arch, interval, transformation, first
     lower_f <- lower
   } else if(transformation == "Returns"){
     fcf <- fc.ser
-    fcf[1] <- first_close * (fcf[1]) # first value replaced with actual price
-    fcf <- cumprod(fcf) # cumulative product of returns is price
-    upper[1] <- first_close * (upper[1]) ; lower[1] <- first_close * (lower[1])
-    upper_f <- cumprod(upper); lower_f <- cumprod(lower)
+    fcf[1] <- first_close + (fcf[1]) # first value replaced with actual price
+    fcf <- cumsum(fcf) # cumulative sum of absolute returns is price
+    upper[1] <- first_close + (upper[1]) ; lower[1] <- first_close + (lower[1])
+    upper_f <- cumsum(upper); lower_f <- cumsum(lower)
   } else if(transformation == "Log Returns"){
     fcf <- fc.ser
     fcf <- exp(fcf) # remove log 
