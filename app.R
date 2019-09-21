@@ -124,7 +124,7 @@ conditionalPanel(
     width = 250,
     top = 500, left = 50, 
     sliderInput('days_forecast_seasonal_naive', 'Days to forecast', min = 0, max =  365, value = 15),
-    selectizeInput('pred_interval_seasonal_naive', 'Prediction Interval', c('99', '95', '90', '80', '70','60', '50', '40', '30', '20', '10'), selected = '95')
+    selectizeInput('pred_interval_seasonal_naive', 'Prediction Interval', c('99', '95', '90', '80', '70','60'), selected = '95')
     
   )
 ),
@@ -149,7 +149,7 @@ conditionalPanel(
         width = 250,
         top = 500, left = 50,
         sliderInput('days_forecast_arima_garch', 'Days to forecast', min = 0, max =  365, value = 15),
-        selectizeInput('pred_interval_arima_garch', 'Prediction Interval', c('99', '95', '90', '80', '70','60', '50', '40', '30', '20', '10'), selected = '95'),
+        selectizeInput('pred_interval_arima_garch', 'Prediction Interval', c('99', '95', '90', '80', '70','60'), selected = '95'),
         
         selectInput("AR_para", "AR (p)", 
                     choices = list("0" = 1, "1" = 2, "2" = 3, "3" = 4), selected = 2), 
@@ -384,20 +384,10 @@ server = shinyServer(function(input, output){
     # ARIMA-GARCH ####
     if(input$forecasting_method == 'Arima-Garch' && input$stock_name != 'Select stock'){
       
-      my_ts = na.omit(getSymbols.yahoo(input$stock_name, auto.assign = F,
+      my_ts = na.omit(getSymbols(input$stock_name, auto.assign = F,
                                from = input$start_time, to = input$end_time))
-      
-      my_ts = my_ts[,4]
-      myts2 = xts2ts(my_ts, freq = 364.25)
-      
-      # Adf - Test Table Info
-      serie_variants <- c("Close","Returns","Log Returns")
-      table_complete <- cbind(serie_variants, stationarity_test(my_ts))
-      colnames(table_complete) <- c("Transformation of the series", "p-value of the ADF test")
     
       # Arima-Garch Table Info
-      my_ts = getSymbols.yahoo(input$stock_name, auto.assign = F,
-                               from = input$start_time, to = input$end_time)
       if(input$transform == "Close"){
         my_ts_for_garch <- my_ts[,4]
       } else if(input$transform =="Returns"){
@@ -410,6 +400,15 @@ server = shinyServer(function(input, output){
                          input$lag_variance_para, input$lag_res_para,
                          input$pred_interval_arima_garch, input$transform, Cl(my_ts[length(my_ts_for_garch)]),
                          input$days_forecast_arima_garch)
+      ic <- model_quality(my_ts_for_garch,input$AR_para, input$MA_para,
+                          input$lag_variance_para, input$lag_res_para)
+      
+      # Table Info
+      serie_variants <- c("Close","Returns","Log Returns")
+      table_complete <- cbind(serie_variants, stationarity_test(my_ts),rep("||",3),
+                              c("AIC","BIC","H-Q"), ic)
+      colnames(table_complete) <- c("Transformation of the series", "p-value of the ADF test","||",
+                                    "Information Criteria", " ")
       
       # Adf - Test Table Creation
       output$view <- renderTable({
@@ -427,8 +426,6 @@ server = shinyServer(function(input, output){
       lines(mat[,2], col ="purple", lty = 2)
       lines(mat[,1], col ="red", lty = 2)
       lines(mat[,3], col ="red", lty = 2)
-     
-     
     
     }
   })

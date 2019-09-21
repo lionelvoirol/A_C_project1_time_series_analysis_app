@@ -94,3 +94,20 @@ garma_model <- function(series, ar, ma, g, arch, interval, transformation, first
   result_frame <- data.frame(upper_f,fcf,lower_f)
   return(result_frame)
 }
+
+model_quality <- function(series, ar, ma, g, arch){
+  
+  #### SPECIFICATIONS OF THE MODEL #### 
+  ugarchspecs <- ugarchspec(variance.model=list(garchOrder = c(as.numeric(g),as.numeric(arch))),
+                            mean.model=list(armaOrder=c(as.numeric(ar),as.numeric(ma)),
+                                            arfima = FALSE), 
+                            distribution="std")
+  
+  ugarch <- ugarchfit(ugarchspecs,series)
+  result_frame <- data.frame(infocriteria(ugarch)[-3])
+  
+  return(result_frame)
+}
+
+
+
