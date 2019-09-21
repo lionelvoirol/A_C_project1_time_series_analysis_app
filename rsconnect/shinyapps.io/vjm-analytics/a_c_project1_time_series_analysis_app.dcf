@@ -5,8 +5,8 @@ account: vjm-analytics
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1112385
-bundleId: 2429743
+bundleId: 2430261
 url: https://vjm-analytics.shinyapps.io/a_c_project1_time_series_analysis_app/
-when: 1568991952.70896
+when: 1569005827.91601
 asMultiple: FALSE
 asStatic: FALSE
