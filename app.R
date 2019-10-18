@@ -30,6 +30,7 @@ source("ma_function.R")
 source("ra_functions.R")
 source("armagarch_functions.R")
 source("news_functions.R")
+source("kernel_function.R")
 
 # run on the server: deployApp()
 # library(rsconnect)
@@ -267,28 +268,37 @@ server = shinyServer(function(input, output){
                                from = input$start_time, to = input$end_time))
       my_ts_1 = my_ts[,4]
       myts2 = xts2ts(my_ts_1, freq = 364.25)
-      par(mfrow=c(2,2))
-      plot(myts2)
+      par(mfrow=c(2,3))
+        plot(myts2)
+      kernel_ <- kernel_data(input$stock_name, 1, -0.15, 0.15)
+        plot(kernel_, main = paste("Density of the Returns of ", input$stock_name))
+        range_1 <- kernel_$x < 0; range_2 <- kernel_$x > 0
+        polygon(kernel_, border="black", lwd = 3)
+        polygon(c(kernel_$x[range_1],0), c(kernel_$y[range_1],0), col="#ff8566", border="#ffcccc", lwd = 0.1)
+        polygon(c(0,kernel_$x[range_2]), c(0,kernel_$y[range_2]), col="#8dd88d", border="#d9f2d9", lwd = 0.1)
+        par(usr = c(0, 1, 0, 1))
+        #text(0.15,0.5,paste(length(kernel_$x[which(kernel_$x <= -0.3)]-1)," smaller\n observations\n ←"))
+        #text(0.85,0.5,paste(length(kernel_$x[which(kernel_$x >= 0.3)]-1)," larger\n observations\n →"))
       
       color_for_returns <- ifelse(week_day_return(my_ts, input$return_method)>0,"green","red")
       color_for_variance <- "darkslateblue"
       
       days_names <- c("Monday", "", "Tuesday", "","Wednesday", "","Thursday", "","Friday", "")
       
-      barplot(week_day_return(my_ts, input$return_method), main = "Day of the week analysis",
-              xlab = "Weekday", col=c(color_for_returns[1], color_for_variance, 
-                                      color_for_returns[3], color_for_variance, 
-                                      color_for_returns[5], color_for_variance,
-                                      color_for_returns[7], color_for_variance,
-                                      color_for_returns[9], color_for_variance),
-              names.arg = days_names,
-              space=c(2,0,2,0,2,0,2,0,2,0),
-              ylim = c(min(week_day_return(my_ts, input$return_method)), 
-                       max(week_day_return(my_ts, input$return_method)) * 2))
-              
-              legend("top", legend = c("positive return", "negative return", "variance"), 
-                     inset=c(-0.2,0), #xpd = TRUE,
-                     fill = c("green", "red", "darkslateblue"))
+        barplot(week_day_return(my_ts, input$return_method), main = "Day of the week analysis",
+                xlab = "Weekday", col=c(color_for_returns[1], color_for_variance, 
+                                        color_for_returns[3], color_for_variance, 
+                                        color_for_returns[5], color_for_variance,
+                                        color_for_returns[7], color_for_variance,
+                                        color_for_returns[9], color_for_variance),
+                names.arg = days_names,
+                space=c(2,0,2,0,2,0,2,0,2,0),
+                ylim = c(min(week_day_return(my_ts, input$return_method)), 
+                         max(week_day_return(my_ts, input$return_method)) * 2))
+                
+                legend("top", legend = c("positive return", "negative return", "variance"), 
+                       inset=c(-0.2,0), #xpd = TRUE,
+                       fill = c("green", "red", "darkslateblue"))
               
       
       color_for_returns <- ifelse(monthly_return(my_ts, input$return_method)>0,"green","red")
@@ -296,39 +306,39 @@ server = shinyServer(function(input, output){
       months_names <- c("Jan", "", "Feb", "", "Mar", "", "Apr", "", "May", "", "Jun", "", "Jul",
                         "", "Aug", "", "Sep", "", "Oct",  "","Nov",  "","Dec", "")
                         
-      barplot(monthly_return(my_ts, input$return_method), main = "Month of the year analysis",
-              xlab = "Month", col=c(color_for_returns[1], color_for_variance, 
-                                    color_for_returns[3], color_for_variance, 
-                                    color_for_returns[5], color_for_variance,
-                                    color_for_returns[7], color_for_variance,
-                                    color_for_returns[9], color_for_variance,
-                                    color_for_returns[11], color_for_variance,
-                                    color_for_returns[13], color_for_variance, 
-                                    color_for_returns[15], color_for_variance, 
-                                    color_for_returns[17], color_for_variance,
-                                    color_for_returns[19], color_for_variance,
-                                    color_for_returns[21], color_for_variance,
-                                    color_for_returns[23], color_for_variance),
-              names.arg = months_names,
-              space=c(2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0),
-              ylim = c(min(monthly_return(my_ts, input$return_method)), 
-                       max(monthly_return(my_ts, input$return_method)) * 2 ))
-      legend("top", legend = c("positive return", "negative return", "variance"), 
-             inset=c(-0.2,0), #xpd = TRUE,
-             fill = c("green", "red", "darkslateblue"))
-      
-      names <- c(input$stock_name, "" , "S&P 500","", "Gold", "", "Bitcoin $", "")
-      barplot(alternative_assets(my_ts, input$start_time, input$end_time, input$return_method), 
-              main = "Comparison to other assets",
-              names.arg = names,
-              col=c("purple","khaki"),
-              space=c(2,0,2,0,2,0,2,0))
-              legend("top", legend = c("average return", "average variance"), 
-              fill = c("purple", "khaki"))
-              
-      par(mfrow=c(1,1))
-
-      newspaper <- collect_news(my_symbols, input$stock_name)
+        barplot(monthly_return(my_ts, input$return_method), main = "Month of the year analysis",
+                xlab = "Month", col=c(color_for_returns[1], color_for_variance, 
+                                      color_for_returns[3], color_for_variance, 
+                                      color_for_returns[5], color_for_variance,
+                                      color_for_returns[7], color_for_variance,
+                                      color_for_returns[9], color_for_variance,
+                                      color_for_returns[11], color_for_variance,
+                                      color_for_returns[13], color_for_variance, 
+                                      color_for_returns[15], color_for_variance, 
+                                      color_for_returns[17], color_for_variance,
+                                      color_for_returns[19], color_for_variance,
+                                      color_for_returns[21], color_for_variance,
+                                      color_for_returns[23], color_for_variance),
+                names.arg = months_names,
+                space=c(2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0),
+                ylim = c(min(monthly_return(my_ts, input$return_method)), 
+                         max(monthly_return(my_ts, input$return_method)) * 2 ))
+        legend("top", legend = c("positive return", "negative return", "variance"), 
+               inset=c(-0.2,0), #xpd = TRUE,
+               fill = c("green", "red", "darkslateblue"))
+        
+        names <- c(input$stock_name, "" , "S&P 500","", "Gold", "", "Bitcoin $", "")
+        barplot(alternative_assets(my_ts, input$start_time, input$end_time, input$return_method), 
+                main = "Comparison to other assets",
+                names.arg = names,
+                col=c("purple","khaki"),
+                space=c(2,0,2,0,2,0,2,0))
+                legend("top", legend = c("average return", "average variance"), 
+                fill = c("purple", "khaki"))
+                
+        par(mfrow=c(1,1))
+  
+        newspaper <- collect_news(my_symbols, input$stock_name)
 
       # News - Text Output
       output$view4 <- renderUI({
