@@ -1,5 +1,5 @@
 # Analytics & Chill - Time series Analysis app
-Contains code and documents related to the project of the Analytics &amp; Chill initiative
+:clapper: Contains code and documents related to the project of the Analytics &amp; Chill initiative
 
 ## Analytics & Chill
 This ongoing project was created by a few students of the Master in Business Analytics and the Master in Statistics at the University of Geneva, we seek to create a forum for the exchange of knowledge and the development of skills in the fields of statistics and data science, all in a fun environment.  We plan to organize our work through discussions and coding sessions to produce projects and develop new skills.
