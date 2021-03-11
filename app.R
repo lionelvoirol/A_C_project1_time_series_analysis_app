@@ -38,9 +38,9 @@ source("kernel_function.R")
 # deployApp()
 
 #load symbols, hashed as comment - Data source before 19.09.19
-#my_symbols <- stockSymbols()
+my_symbols <- stockSymbols()
 #load symbols - Data source as of 19.09.19
-my_symbols <- tq_index("RUSSELL3000")
+#my_symbols <- tq_index("RUSSELL3000")
 
 # load currencies and append them to the main list
 options(stringsAsFactors = FALSE)
